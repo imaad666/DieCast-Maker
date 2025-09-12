@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Wheels Card Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <h1>🏎️ Hot Wheels Card Generator</h1>
+                <p>Create custom Hot Wheels cards with AI-generated graphics</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="carName">Enter Car Name:</label>
+                    <input type="text" id="carName"
+                        placeholder="e.g., Ferrari F40, Lamborghini Countach, Tesla Model S">
+                </div>
+
+                <div class="card-type-selection">
+                    <label>Select Card Type:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="cardType" value="mainline" checked>
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Mainline</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="cardType" value="premium">
+                            <span class="radio-custom"></span>
+                            <span class="radio-label">Premium</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">
+                    <span class="btn-text">Generate Hot Wheels Card</span>
+                    <div class="loading-spinner" style="display: none;"></div>
+                </button>
+            </div>
+
+            <div id="resultSection" class="result-section" style="display: none;">
+                <div class="card-container">
+                    <div id="hotWheelsCard" class="hot-wheels-card">
+                        <!-- Generated card will appear here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
