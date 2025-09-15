@@ -5,59 +5,571 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hot Wheels Card Generator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="./hot-wheels-seeklogo-3.svg">
+    <style>
+        @font-face {
+            font-family: 'Heavy Heap';
+            src: url('./Heavy Heap Font/heavy heap rg.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'PepperXCupa';
+            src: url('./PepperXCupa-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PepperXCupa', 'Arial', sans-serif;
+            background: #ff0000;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: transparent;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            height: 80px;
+            background: linear-gradient(135deg, #1e3c72 0%, #4a90e2 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-logo {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            display: block;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled .header-logo {
+            width: 60px;
+            height: 60px;
+        }
+
+        .main-content {
+            margin-top: 100vh;
+            padding: 40px 20px;
+            background: #ff0000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 80px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.5s ease;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 4px solid #ff6b35;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e, #1e3c72, #ff6b35);
+            border-radius: 25px;
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'Heavy Heap', 'Arial Black', sans-serif;
+            font-size: 2.5rem;
+            color: #1e3c72;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #ff6b35;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.2rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 20px;
+            border: 3px solid #f7931e;
+            border-radius: 15px;
+            font-size: 18px;
+            box-sizing: border-box;
+            background: #fff8f0;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.2);
+            background: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 10px rgba(255, 107, 53, 0.2);
+        }
+
+        .result {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .result img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 3px solid #1e3c72;
+        }
+
+        .loading {
+            text-align: center;
+            color: #1e3c72;
+            font-style: italic;
+            font-size: 1.1rem;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff8f0 0%, #f0f8ff 100%);
+            border-radius: 15px;
+            border: 2px solid #f7931e;
+        }
+
+        .error {
+            color: #d32f2f;
+            background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ffcdd2;
+            font-weight: 600;
+        }
+
+
+        .card-type-group {
+            margin-bottom: 20px;
+        }
+
+        .card-type-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-type-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+
+        .card-type-btn:hover {
+            border-color: #ff6b35;
+            transform: translateY(-2px);
+        }
+
+        .card-type-btn.selected {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            border-color: #ff6b35;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .card-type-btn.selected:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .button-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'PepperXCupa', 'Arial', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 10px rgba(255, 107, 53, 0.2);
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.7;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <h1>🏎️ Hot Wheels Card Generator</h1>
-                <p>Create custom Hot Wheels cards with AI-generated graphics</p>
-            </div>
-        </header>
-
-        <main class="main-content">
-            <div class="input-section">
-                <div class="input-group">
-                    <label for="carName">Enter Car Name:</label>
-                    <input type="text" id="carName"
-                        placeholder="e.g., Ferrari F40, Lamborghini Countach, Tesla Model S">
-                </div>
-
-                <div class="card-type-selection">
-                    <label>Select Card Type:</label>
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="cardType" value="mainline" checked>
-                            <span class="radio-custom"></span>
-                            <span class="radio-label">Mainline</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="cardType" value="premium">
-                            <span class="radio-custom"></span>
-                            <span class="radio-label">Premium</span>
-                        </label>
-                    </div>
-                </div>
-
-                <button id="generateBtn" class="generate-btn">
-                    <span class="btn-text">Generate Hot Wheels Card</span>
-                    <div class="loading-spinner" style="display: none;"></div>
-                </button>
-            </div>
-
-            <div id="resultSection" class="result-section" style="display: none;">
-                <div class="card-container">
-                    <div id="hotWheelsCard" class="hot-wheels-card">
-                        <!-- Generated card will appear here -->
-                    </div>
-                </div>
-            </div>
-        </main>
+    <div class="header">
+        <img src="./hot-wheels-seeklogo-3.svg" alt="Hot Wheels Logo" class="header-logo">
     </div>
 
-    <script src="script.js"></script>
+    <div class="main-content">
+        <div class="container">
+            <h1>HOT WHEELS</h1>
+            <p class="subtitle">Card Generator</p>
+
+            <div class="input-group">
+                <label for="carName">Enter Car Model:</label>
+                <input type="text" id="carName" placeholder="e.g., Ferrari F40, Mercedes AMG, Tesla Model S">
+            </div>
+
+            <div class="card-type-group">
+                <label>Select Card Type:</label>
+                <div class="button-group">
+                    <button id="mainlineBtn" class="card-type-btn selected" data-type="mainline">
+                        <img src="./hot-wheels-seeklogo-3.svg" alt="Mainline" class="button-logo">
+                    </button>
+                    <button id="premiumBtn" class="card-type-btn" data-type="premium">
+                        <img src="./Hot Wheels Premium Gold Label.webp" alt="Premium" class="button-logo">
+                    </button>
+                </div>
+            </div>
+
+            <button id="generateBtn" class="generate-btn">Generate Card</button>
+
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyC_vBTXaWKWBOFB9FuSHrSVo7kuF_bGREQ';
+
+        // Scroll animation for header and main content
+        let isScrolled = false;
+
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            const mainContent = document.querySelector('.main-content');
+            const scrollY = window.scrollY;
+
+            // More responsive scroll threshold
+            const scrolled = scrollY > 100;
+
+            if (scrolled && !isScrolled) {
+                header.classList.add('scrolled');
+                mainContent.classList.add('visible');
+                isScrolled = true;
+            } else if (!scrolled && isScrolled) {
+                header.classList.remove('scrolled');
+                mainContent.classList.remove('visible');
+                isScrolled = false;
+            }
+
+            // Smooth logo scaling based on scroll position
+            const logo = document.querySelector('.header-logo');
+            const maxSize = 400;
+            const minSize = 60;
+            const scrollProgress = Math.min(scrollY / 200, 1); // 200px scroll for full transition
+            const currentSize = maxSize - (scrollProgress * (maxSize - minSize));
+
+            if (logo) {
+                logo.style.width = currentSize + 'px';
+                logo.style.height = currentSize + 'px';
+            }
+        });
+
+        // Card type button selection
+        let selectedCardType = 'mainline'; // Default selection
+
+        document.getElementById('mainlineBtn').addEventListener('click', () => {
+            selectCardType('mainline');
+        });
+
+        document.getElementById('premiumBtn').addEventListener('click', () => {
+            selectCardType('premium');
+        });
+
+        function selectCardType(type) {
+            // Remove selected class from all buttons
+            document.querySelectorAll('.card-type-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Add selected class to clicked button
+            document.getElementById(type + 'Btn').classList.add('selected');
+
+            // Update selected type
+            selectedCardType = type;
+        }
+
+        // Generate button event listener
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            await generateCard(selectedCardType);
+        });
+
+        async function generateCard(cardType) {
+            const carName = document.getElementById('carName').value.trim();
+            const resultDiv = document.getElementById('result');
+            const generateBtn = document.getElementById('generateBtn');
+
+            if (!carName) {
+                alert('Please enter a car model');
+                return;
+            }
+
+            // Disable button during generation
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            resultDiv.innerHTML = `<div class="loading">Creating your Hot Wheels ${cardType} card...</div>`;
+
+            try {
+                console.log('Starting generation for:', carName, 'Type:', cardType);
+
+                // Choose template based on card type
+                const templateFile = cardType === 'premium' ? 'premium card].webp' : 'temp.png';
+                const templateBase64 = await convertImageToBase64(templateFile);
+                console.log('Template converted, length:', templateBase64.length);
+
+                // Make API request to image generation model
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                {
+                                    text: `Create a professional Hot Wheels ${cardType} card using the provided template. Follow these detailed specifications:
+
+TEMPLATE PRESERVATION:
+- Maintain the EXACT template dimensions, layout, colors, and branding elements
+- Keep all original Hot Wheels logos, text, and design elements intact
+- Preserve the template's proportions and positioning exactly as provided
+- The output image must be the SAME SIZE as the template with NO additional black or white space
+- Fill the entire template area without any cropping or padding
+
+CAR IMAGE REQUIREMENTS:
+- Render a highly detailed, photorealistic image of the ${carName} in the designated white area
+- Use high-definition reference images for maximum detail and accuracy
+- Keep the car completely stock - no modifications, custom paint, or aftermarket parts
+- Show the car from a 3/4 angle for best visual impact
+- Ensure proper lighting with realistic shadows and reflections
+- Make the car look like a premium die-cast model with metallic paint finish
+- Include accurate proportions, body lines, and distinctive features of the ${carName}
+
+BLISTER PACKAGE SECTION:
+- Create a realistic blister package showing the actual toy car inside
+- Use clear, transparent plastic with subtle reflections and distortions
+- Position the toy car at an attractive angle within the blister
+- Add realistic plastic packaging details like seams and edges
+- Include proper depth and perspective to show the 3D nature of the package
+- Make the blister look like authentic Hot Wheels packaging
+
+TEXT AND LABELING:
+- Render the proper car name "${carName}" clearly below the blister package
+- Use Hot Wheels-style typography that matches the template
+- Ensure text is readable and properly positioned
+- Add any additional model-specific details if applicable
+
+QUALITY STANDARDS:
+- Generate in ultra-high resolution for crisp, professional output
+- Use photorealistic rendering techniques
+- Ensure proper contrast and color accuracy
+- Make it look like an official Hot Wheels product you'd find in stores
+- Pay attention to fine details like paint reflections, panel gaps, and surface textures
+- CRITICAL: The final output must be exactly the same dimensions as the template with no extra space
+
+The final result should be indistinguishable from a real Hot Wheels ${cardType} card with exceptional detail and authenticity, maintaining the exact template dimensions.`
+                                },
+                                {
+                                    inlineData: {
+                                        mimeType: cardType === 'premium' ? "image/webp" : "image/png",
+                                        data: templateBase64
+                                    }
+                                }
+                            ]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 2048,
+                            responseModalities: ["TEXT", "IMAGE"]
+                        }
+                    })
+                });
+
+                console.log('API response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API error:', errorText);
+                    throw new Error(`API request failed: ${response.status} - ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('API response:', data);
+
+                // Check for generated image
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+                    const parts = data.candidates[0].content.parts;
+
+                    for (const part of parts) {
+                        if (part.inlineData && part.inlineData.mimeType && part.inlineData.mimeType.startsWith('image/')) {
+                            const imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                            resultDiv.innerHTML = `<img src="${imageUrl}" alt="Generated Hot Wheels ${cardType} Card for ${carName}">`;
+                            return;
+                        }
+                    }
+                }
+
+                // If no image found, show text response
+                const textPart = data.candidates[0].content.parts.find(part => part.text);
+                if (textPart) {
+                    resultDiv.innerHTML = `<div class="error">No image generated. Response: ${textPart.text}</div>`;
+                } else {
+                    resultDiv.innerHTML = '<div class="error">Unexpected response format</div>';
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Card';
+            }
+        }
+
+        function convertImageToBase64(imagePath) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const dataURL = canvas.toDataURL('image/png');
+                    resolve(dataURL.split(',')[1]); // Remove data:image/png;base64, prefix
+                };
+                img.onerror = () => reject(new Error('Failed to load template image'));
+                img.src = imagePath;
+            });
+        }
+    </script>
 </body>
 
 </html>
