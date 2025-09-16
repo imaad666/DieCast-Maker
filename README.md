@@ -1,2 +1,2 @@
-**Hot Wheels Mainline
-**Hot Wheels Premium
+#HotWheels Card Generator
+##Premium & Mainline Cards
